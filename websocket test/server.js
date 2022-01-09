@@ -51,7 +51,7 @@ function simRound(){
                 }
                 client.send(JSON.stringify(message));
                 console.log('vote sent')
-            }, 2000);
+            }, 1900);
             const timeoutObj = setTimeout(() => {
                 clearInterval(intervalObj);
                 console.log('Round Ended');
