@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="d3.layout.cloud.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>WordCloud</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="screenspace">
+            <div id="staticHolder">
+                <img src="./staic/static.png" id='staticimg'>
+            </div>
+            <div id="wordcloudHolder">
+                <div id="canvasHolder">
+                    <svg id="remove"></svg>
+                </div>
+            </div>
+        </div>
+        <script>
+            console.log("script load")
+            let myInterval;
+            let activeWords = []
+            let wordsRemoved  = 0
+            var wordList = [
+                "34werwe",
+                "69dongerswag420",
+                "A9yearoldkid",
+                "Abexuro",
+                "Ac1dz",
+                "Aciou51",
+                "Addoumscz",
+                "Advocateplatform",
+                "Aedyncash",
+                "Aimlessdriftertj",
+                "Airohhhhh",
+                "Akashn",
+                "Akaswantv",
+                "Alexmahs",
+                "Basic_bs",
+                "Beauair",
+                "Beefsock",
+                "Behoimi__",
+                "Beigebeigebeige",
+                "Bezraps__",
+                "Billyblueshoes",
+                "Bla_ze803",
+                "Black_187er",
+                "Blackyoshifgc",
+                "Blake__mw",
+                "Bluuberrypancake",
+                "Bobounchained",
+                "Bobs1235342",
+                "Boredzter",
+                "Bramz_brandon",
+                "Brutaline",
+                "Bryanator0125",
+                "Bullitt_",
+                "Buzzerkerz",
+                "Callisto187",
+                "Cannibalsammich",
+                "Capivarazumbi",
+                "Cartians",
+                "Catgirlsecre",
+                "Cazuela_penca",
+                "Cdnthe1st",
+                "Cfc_trunks",
+                "Ch1llmatic_610",
+                "Chadwickthelad",
+                "Chapstock",
+                "Cheesepanda",
+                "Chia200",
+                "Chii_pii",
+                "Chocolatebeef",
+                "Christylerw",
+                "Chroma_luma",
+                "Cjayxs",
+                "Cloudynas1",
+                "Coffeeholicxd",
+                "Commanderroot",
+                "Confleisomg",
+                "Conwalk",
+                "Coolguyslims",
+                "Corndawg420",
+                "Corntato77",
+                "Cowhunterr",
+                "Crashmso",
+                "Creatzs_",
+                "Crekkers",
+                "Crohna",
+                "Crownunburger",
+                "Cuenca5",
+                "Curseshadowx",
+                "Cvrnagex",
+                "D3ment3dsan",
+                "Da__shinks",
+                "Daddyjoose",
+                "Dangatz",
+                "Dawuki",
+                "Deez_aqua",
+                "Diaphone_",
+                "Diarog",
+                "Diceman912",
+                "Dingydino"
+            ]
+            
+            function mapList(list){
+                let mapped = list.map(function(d) {
+                    return {text:d, size: 8 + Math.random() * 40}
+                })
+                return mapped;
+            }
+            let rotationOptions = [-60,-30,0,30,60, 90]
+            // let rotationOptions = [-45,0,45, 90]
+            // let rotationOptions = [0,90]
+            function getRandomIntInclusive(min, max) {
+                min = Math.ceil(min);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+            }
+            function startGame(){
+                myInterval = setInterval(function(){
+                    let randomElement = activeWords[Math.floor(Math.random() * activeWords.length)];
+                    activeWordCount--
+                    wordsRemoved++
+                    document.getElementById(randomElement).remove()
+                    let target2 = activeWords.indexOf(randomElement)
+                    activeWords.splice(target2,1);
+                    if(activeWordCount<2){
+                        endGame()
+                        console.log("WINNER: " + activeWords)
+                        document.getElementById(activeWords[0]).style.transform = "scale(3)"
+                    }
+                    let target = wordList.indexOf(randomElement)
+                    wordList.splice(target,1);
+                    if(wordsRemoved > 9){
+                        newCloud();
+                    }
+                    // for(let i = 0; i<wordList.length; i++){
+                    //     if(wordList[i] == randomElement){
+                    //         wordList.splice(i,1);
+                    //         document.getElementById(randomElement).remove()
+                    //         break;
+                    //     }
+                    // }
+                }, 200);
+            }
+            function endGame(){
+                clearInterval(myInterval);
+            }
+            function newCloud(){
+                activeWords = [];
+                activeWordCount = 0;
+                wordsRemoved  = 0;
+                var layout = d3.layout.cloud()
+                    .size([900, 600])
+                    .words(mapList(wordList))
+                    .spiral('rectangular')
+                    // .spiral('archimedean')
+                    .padding(2)
+                    .rotate(function() { return rotationOptions[Math.floor(Math.random()*rotationOptions.length)]; })
+                    .font("Impact")
+                    .fontSize(function(d) { return d.size; })
+                    .on("word", function(d) {activeWords.push(d.text); activeWordCount++;})
+                    .on("end", draw);
+                function draw(words) {
+                    console.log("draw running")
+                    console.log("Words Remaining: ", wordList.length)
+                    document.getElementById("remove").remove();
+                    d3.select("#canvasHolder").append("svg")
+                        .attr("id", "remove")
+                        .attr("width", layout.size()[0])
+                        .attr("height", layout.size()[1])
+                    .append("g")
+                        .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+                    .selectAll("text")
+                        .data(words)
+                    .enter().append("text")
+                        .style("font-size", function(d) { return d.size + "px"; })
+                        .style("font-family", "Impact")
+                        .attr("text-anchor", "middle")
+                        .attr("fill", "limegreen")
+                        .attr("transform", function(d) {
+                            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                        })
+                        .text(function(d) { return d.text; })
+                        .on("click", e => {
+                            console.log(e)
+                            document.getElementById(e.text).style.display = 'none'
+                        })
+                        .attr("id", function(d){
+                            return d.text
+                        });
+                    
+                }
+                layout.start();
+            }
+            newCloud()
+        </script>
+    </body>
+</html>
