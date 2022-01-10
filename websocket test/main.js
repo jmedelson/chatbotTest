@@ -114,11 +114,12 @@ async function startRound(){
         target.innerText = ':' + i
         await new Promise(r => setTimeout(r, 990));
     }
-    reveal()
+    document.getElementById('box' + selected).classList.add('show-card')
     for(let i = 13; i>=0; i--){
         target.style.visibility = (target.style.visibility == 'hidden' ? '' : 'hidden');
         await new Promise(r => setTimeout(r, 150));
     }
+    reveal()
 }
 function pingServer(){
     ws.send('requesting vote')
