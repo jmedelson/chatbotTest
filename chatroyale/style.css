@@ -1,0 +1,43 @@
+body{
+    margin: 0;
+}
+#screenspace{
+    background: black;
+    width: 1600px;
+    height: 900px;
+}
+#royaleHolder{
+    position: absolute;
+    top: 75px;
+    left: 600px;
+    width: 950px;
+    height: 750px;
+
+}
+#wordHolder{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.word{
+    width: 20%;
+    color: limegreen;
+    text-align: center;
+}
+.wordText{
+    margin: 0 auto;
+    font-size: 11px;
+    font-family: monospace;
+}
+#uiHolder{
+    position: absolute;
+    display: flex;
+    top: 0px;
+    left: 700px;
+    color: white;
+    width: 666px;
+    font-size: 24px;
+    justify-content: space-between;
+}
