@@ -42,10 +42,12 @@ function simRound(){
                     right:getRandomIntInclusive(1,500),
                     left:getRandomIntInclusive(1,500)
                 }
+                let max = Math.max(data.up,data.down,data.right,data.left)
+                let winner = Object.keys(data).find(key => data[key] === max)
                 let sum = data.up + data.down + data.left + data.right
                 let message = {
                     header: 'vote',
-                    winner: randomElement,
+                    winner: winner,
                     votes:data,
                     total:sum
                 }
@@ -56,6 +58,7 @@ function simRound(){
                 clearInterval(intervalObj);
                 console.log('Round Ended');
             }, 30100);
+            // }, 2000);
         }
     });
     
@@ -69,18 +72,20 @@ function webSocketBroadcast(){
         console.log(client.readyState)
         console.log(client.readyState === WebSocketServer.OPEN)
         let commands = ['right', 'left', 'up', 'down']
-        let  randomElement = commands[Math.floor(Math.random() * commands.length)];
+        // let  randomElement = commands[Math.floor(Math.random() * commands.length)];
         let data = {
             up:getRandomIntInclusive(1,500),
             down:getRandomIntInclusive(1,500),
             right:getRandomIntInclusive(1,500),
             left:getRandomIntInclusive(1,500)
         }
+        let max = Math.max(data.up,data.down,data.right,data.left)
+        let winner = Object.keys(data).find(key => data[key] === max)
         let sum = data.up + data.down + data.left + data.right
         if (client.readyState === WebSocketServer.OPEN) {
             let message = {
                 header: 'vote',
-                winner: randomElement,
+                winner: winner,
                 votes:data,
                 total:sum
             }
