@@ -2,7 +2,7 @@ let ws = new WebSocket("wss://lhek8s2pxc.execute-api.us-east-2.amazonaws.com/dev
 function pingServer(){
     ws.send('requesting vote')
 }
-ws.onopen = function() {
+ws.onopen = function(evt) {
     console.log('Websocket connected')
     // ws.send("Browser Websocket Open");
 }

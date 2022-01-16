@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Web ChatBot</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="content">
+        <h1>HELLO WORLD</h1>
+    </div>
+	<script src="main.js"></script>
+    <script src="tmi.min.js"></script>
+    <script>
+        const opts = {
+            identity: {
+                username: 'jdevtesting',
+                password: 'oauth:tlelnrqad5h8duoiraeji86ysqdxkq'
+                //https://twitchapps.com/tmi/
+            },
+            channels: [
+                'jayemochi'
+            ]
+        };
+        const client = new tmi.Client(opts);
+        // Register our event handlers (defined below)
+        client.on('message', onMessageHandler);
+        client.on('connected', onConnectedHandler);
+        client.on('disconnected', onDisonnectedHandler);
+        client.connect();
+        function onMessageHandler (target, context, msg, self) {
+            const message = msg.trim();
+            var newNode = document.createElement('p');
+            newNode.innerText = message
+            document.getElementById('content').append(newNode)
+        }
+        function onConnectedHandler (addr, port) {
+            console.log(`* Connected to ${addr}:${port}`);
+        }
+        function onDisonnectedHandler () {
+            console.log(`* Disconnected from twitch TMI`);
+        }
+
+    </script>
+  </body>
+</html>
