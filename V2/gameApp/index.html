@@ -167,6 +167,10 @@
                 <div id="wordHolder">
                 </div>
             </div>
+            <div id="eliminationHolder">
+                <h1>Eliminations Leader</h1>
+                <h1 id="eliminations">Placeholder: 0</h1>
+            </div>
             <div id="uiHolder">
                 <div>
                     <p>OnSreen:<span  id="onscreen">0</span></p>
@@ -193,20 +197,37 @@
         client.on('disconnected', onDisonnectedHandler);
         // client.connect();
         function onMessageHandler (target, context, msg, self) {
-            const message = msg.trim();
+            let message = msg.trim();
             console.log(message)
-            if(message.includes('!up')){
-                votes['up'] += 1;
-                voteCount += 1;
-            }else if(message.includes('!down')){
-                votes['down'] += 1;
-                voteCount += 1;
-            }else if(message.includes('!right')){
-                votes['right'] += 1;
-                voteCount += 1;
-            }else if(message.includes('!left')){
-                votes['left'] += 1;
-                voteCount += 1;
+            if(!(settings.chatGame)){
+                if(message.includes('!up')){
+                    votes['up'] += 1;
+                    voteCount += 1;
+                }else if(message.includes('!down')){
+                    votes['down'] += 1;
+                    voteCount += 1;
+                }else if(message.includes('!right')){
+                    votes['right'] += 1;
+                    voteCount += 1;
+                }else if(message.includes('!left')){
+                    votes['left'] += 1;
+                    voteCount += 1;
+                }
+            }else{
+                let wordNumber = message.split(' ').length
+                if(wordNumber == 1){
+                    message = message.toLocaleLowerCase()
+                    if(renderList.hasOwnProperty(message)){
+                        removeWord(message)
+                        if(eliminations.hasOwnProperty(context['display-name'])){
+                            eliminations[context['display-name']] = eliminations[context['display-name']] + 1
+                        }else{
+                            eliminations[context['display-name']] = 1
+                        }
+                        leader = Object.entries(eliminations).sort(([,a],[,b]) => b-a).slice(0,1)
+                        document.getElementById("eliminations").innerText = leader[0] + " - " + leader[1]
+                    }
+                }
             }
         }
         function onConnectedHandler (addr, port) {
@@ -218,7 +239,6 @@
             tmiConnected = false
         }
         /* variables script */
-        var users = {};
         var votes = {
             up:0,
             down:0,
@@ -227,14 +247,15 @@
         };
         var voteCount = 0;
         let ws = new WebSocket("wss://lhek8s2pxc.execute-api.us-east-2.amazonaws.com/dev?app=game");
-        let words =[]
         var settings = {
             chatGame: false,
             chaos:false,
             interval:5,
             timer:30,
             on: true,
-            activeThreshold: 1
+            activeThreshold: 1,
+            maxPlayers: 1000,
+            refill: 280
         }
         let selected = 5
         /* Gridgame script */
@@ -483,12 +504,29 @@
         /* Chat game script */
         let onscreen, offscreen, total;
         let myInterval;
-        shuffle(words)
+        let leader;
+        // shuffle(words)
+        let words = []
         let renderList = {}
+        let eliminations = {}
         console.log("JS LOADED")
+        function startRoyale(players){
+            words = []
+            renderList = {}
+            eliminations = {}
+            console.log("Start Royale")
+            let playnum = Math.min(players.length, settings.maxPlayers)
+            for(let i = 0; i<playnum; i++){
+                words.push(players[i].twitchname)
+            }
+            loadRender()
+            display()
+            client.connect();
+            // console.log(words)
+        }
         function loadRender(){
             while(Object.keys(renderList).length< 300 && words.length){
-                let item = words.pop()
+                let item = words.pop().toLocaleLowerCase()
                 renderList[item]=item;
             }
             onscreen = Object.keys(renderList).length
@@ -504,7 +542,7 @@
                 arr[length] = temp;
             }
         }
-        loadRender()
+        // loadRender()
         function display(){
             console.log("display")
             total = onscreen+offscreen
@@ -521,7 +559,7 @@
                 let div = document.createElement("div")
                 div.setAttribute("class","word")
                 // let name = "item"+i
-                div.setAttribute("id",item)
+                div.setAttribute("id",item.toLocaleLowerCase())
                 let p = document.createElement("p")
                 p.setAttribute("class","wordText")
                 p.innerText = item
@@ -530,10 +568,29 @@
                 i++
             }
         }
+        function showEliminations(){
+            console.log(eliminations)
+        }
         function getRandomIntInclusive(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+        }
+        function removeWord(name){
+            document.getElementById(name).style.visibility = "hidden"
+            delete renderList[name]
+            total--
+            onscreen--
+            document.getElementById("total").innerText = total;
+            document.getElementById("onscreen").innerText = onscreen;
+            if(onscreen<=settings.refill && offscreen>0){
+                loadRender()
+                display()
+            }
+            if(onscreen<2){
+                client.disconnect();
+                console.log("Winner: " + renderList[Object.keys(renderList)[0]])
+            }
         }
         function randRemove(){
             let items = Object.keys(renderList)
@@ -555,7 +612,7 @@
             // console.log(items.length)
             // return(items-1)
         }
-        display()
+        // display()
         function runGame(){
             myInterval = setInterval(randRemove, 50);
         }
@@ -574,14 +631,19 @@
             console.log(parsed)
             if(parsed.header == 'startGrid'){
                 startRound();
+            }else if(parsed.header == 'startRoyale'){
+                startRoyale(parsed.data);
             }else if(parsed.header == 'resetGrid'){
                 reset();
             }else if(parsed.header == 'gameSettings'){
                 let data = parsed.data
                 console.log(data)
-                chatGame = data.chatScene
+                settings.chatGame = data.chatScene
                 settings.timer = data.gridDuration
                 settings.interval = data.gridInterval
+                settings.chaos = data.chaosMode
+                settings.maxPlayers = data.maxPlayers
+                settings.refill = data.refill
                 reset()
                 setScene(chatGame)
             }else if(parsed.header == 'vote'){
@@ -591,7 +653,6 @@
             }
             console.log("received data over websocket")
             console.log(received)
-
         };
         ws.onclose = function() { 
             console.log("websocket closed")
