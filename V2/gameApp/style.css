@@ -1,0 +1,166 @@
+body{
+    margin: 0;
+}
+#screenspace{
+    background: black;
+    width: 1600px;
+    height: 900px;
+}
+#loading{
+    position: absolute;
+    left: 740px;
+    top: 40px;
+    width: 650px;
+}
+#boxGame{
+    display: none;
+}
+#chatGame{
+    display: none;
+}
+#timerHolder{
+    color: white;
+    position: absolute;
+    left: 640px;
+    top: 80px;
+}
+#commandHolder{
+    position: absolute;
+    left: 640px;
+    top: 345px;
+    color: white;
+}
+#gridHolder{
+    position: absolute;
+    left: 1025px;
+    top: 120px;
+    color: white;
+}
+#royaleHolder{
+    position: absolute;
+    top: 75px;
+    left: 600px;
+    width: 950px;
+    height: 750px;
+
+}
+#wordHolder{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+#uiHolder{
+    position: absolute;
+    display: flex;
+    top: 0px;
+    left: 700px;
+    color: white;
+    width: 666px;
+    font-size: 24px;
+    justify-content: space-between;
+}
+#spinner{
+    width: 100%;
+}
+#timerText{
+    color: limegreen;
+    font-size: 32px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    font-family: monospace;
+}
+#timer{
+    font-size: 170px;
+    font-family: sans-serif;
+    margin-top: 0;
+    font-weight: 600;
+}
+#commandText{
+    color: limegreen;
+    font-size: 34px;
+    font-family: monospace;
+}
+.green{
+    border: 1px solid #073e12;
+}
+.command{
+    display: inline-block;
+    font-size: 24px;
+    font-family: monospace;
+    margin: 0;
+}
+.commandBar{
+    /* background: white; */
+    width: 60%;
+    float: right;
+    height: 14px;
+    margin-top: 7px;
+}
+.innerCommandBar{
+    width: 10%;
+    height: 14px;
+    background: limegreen;
+}
+#grid{
+    width: 520px;
+}
+.box{
+    font-size: 40px;
+    width: 28%;
+    height: 118px;
+    display: inline-block;
+    text-align: center;
+    margin-right: 20px;
+    margin-bottom: 22px;
+}
+.box p{
+    margin: 36px 0;
+}
+.flip-card{
+    background-color: transparent;
+    perspective: 1000px;
+}
+.flip-inner{
+    border: 2px solid #ffffff;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+.flip-card:hover .flip-inner {
+    transform: rotateY(180deg);
+}
+.show-card .flip-inner{
+    transform: rotateY(180deg);
+}
+.flip-front, .flip-back{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+}
+.flip-front {
+    /* background-color: #bbb; */
+    /* color: black; */
+}
+.flip-back {
+    /* background-color: dodgerblue; */
+    /* color: white; */
+    transform: rotateY(180deg);
+}
+/************** CHAT GAME ****************/
+.word{
+    width: 20%;
+    color: limegreen;
+    text-align: center;
+}
+.wordText{
+    margin: 0 auto;
+    font-size: 11px;
+    font-family: monospace;
+}

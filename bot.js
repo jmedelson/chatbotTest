@@ -120,7 +120,7 @@ function onMessageHandler (target, context, msg, self) {
   if (self) { return; } // Ignore messages from the bot
   // Remove whitespace from chat message
   const message = msg.trim();
-  if(mods.includes(context['username'])){
+  if(message.includes(context['username'])){
     if(message.includes('!off')){
       settings.on = false
       console.log('chatbot off')
