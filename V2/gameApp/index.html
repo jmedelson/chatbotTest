@@ -169,7 +169,7 @@
             </div>
             <div id="eliminationHolder">
                 <h1>Eliminations Leader</h1>
-                <h1 id="eliminations">Placeholder: 0</h1>
+                <h1 id="eliminations"></h1>
             </div>
             <div id="uiHolder">
                 <div>
@@ -224,7 +224,7 @@
                         }else{
                             eliminations[context['display-name']] = 1
                         }
-                        leader = Object.entries(eliminations).sort(([,a],[,b]) => b-a).slice(0,1)
+                        leader = Object.entries(eliminations).sort(([,a],[,b]) => b-a).slice(0,1)[0]
                         document.getElementById("eliminations").innerText = leader[0] + " - " + leader[1]
                     }
                 }
@@ -511,6 +511,7 @@
         let eliminations = {}
         console.log("JS LOADED")
         function startRoyale(players){
+            document.getElementById("eliminations").innerText = ""
             words = []
             renderList = {}
             eliminations = {}
@@ -645,7 +646,7 @@
                 settings.maxPlayers = data.maxPlayers
                 settings.refill = data.refill
                 reset()
-                setScene(chatGame)
+                setScene(settings.chatGame)
             }else if(parsed.header == 'vote'){
                 let command = parsed.winner
                 gridLogic(command)
