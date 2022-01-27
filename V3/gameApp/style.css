@@ -6,11 +6,39 @@ body{
     width: 1600px;
     height: 900px;
 }
+#screenspace.catapp{
+    background: #ded6e4;
+}
 #loading{
     position: absolute;
     left: 740px;
     top: 40px;
     width: 650px;
+}
+#staticHolder{
+    /* display: none; */
+}
+#textHolder{
+    display: none;
+}
+#catHolder{
+    display: none;
+}
+#cat1{
+    position: absolute;
+    top: 130px;
+    left: 890px;
+}
+#catimg1{
+    height: 140px;
+}
+#cat3{
+    position: absolute;
+    top: 660px;
+    left: 700px;
+}
+#catimg3{
+    height: 160px;
 }
 #boxGame{
     display: none;
@@ -18,11 +46,44 @@ body{
 #chatGame{
     display: none;
 }
+#intermissionScene{
+    display: none;
+}
+#intermissionText{
+    color: white;
+    position: absolute;
+    text-align: center;
+    top: 170px;
+    left: 775px;
+    font-size: 36px;
+}
+#newRoundScene{
+    display: none;
+}
+#newRoundText{
+    color: white;
+    position: absolute;
+    text-align: center;
+    top: 170px;
+    left: 750px;
+    font-size: 36px;
+}
+#newRoundText2{   
+    margin-top: 80px;
+    font-size: 34px;
+}
 #timerHolder{
     color: white;
     position: absolute;
     left: 640px;
     top: 80px;
+}
+#roundHolder{
+    position: absolute;
+    color: white;
+    top: 600px;
+    left: 54px;
+    font-size: 24px;
 }
 #prizeHolder{
     position: absolute;
@@ -35,6 +96,12 @@ body{
     left: 640px;
     top: 345px;
     color: white;
+}
+#winnerHolder{
+    color: white;
+    top: 740px;
+    left: 55px;
+    position: absolute;
 }
 #gridHolder{
     position: absolute;
@@ -83,25 +150,40 @@ body{
     margin-top: 0px;
     font-family: monospace;
 }
+#timerText.catapp{
+    color: #644bee;
+}
 #timer{
     font-size: 170px;
     font-family: sans-serif;
     margin-top: 0;
     font-weight: 600;
 }
+#timer.catapp{
+    color: #fa72bd;
+}
 #commandText{
     color: limegreen;
     font-size: 34px;
     font-family: monospace;
 }
+#commandText.catapp{
+    color: #644bee;
+}
 .green{
     border: 1px solid #073e12;
+}
+.green.catapp{
+    border: 1px solid #c4bec9;
 }
 .command{
     display: inline-block;
     font-size: 24px;
     font-family: monospace;
     margin: 0;
+}
+.command.catapp{
+    color: #644bee;
 }
 .commandBar{
     /* background: white; */
@@ -115,8 +197,17 @@ body{
     height: 14px;
     background: white;
 }
+.innerCommandBar.catapp{
+    background: #fa72bd !important;
+}
 #grid{
     width: 520px;
+}
+#catIcon{
+    margin-top: 30px;
+}
+#fishIcon{
+    margin-top: 38px;
 }
 .box{
     font-size: 40px;
@@ -142,6 +233,10 @@ body{
     text-align: center;
     transition: transform 0.8s;
     transform-style: preserve-3d;
+}
+.flip-inner.catapp{
+    border: 2px solid #c9bcd1;
+    color: #c9bcd1;
 }
 .flip-card:hover .flip-inner {
     transform: rotateY(180deg);
@@ -176,3 +271,32 @@ body{
     font-size: 11px;
     font-family: monospace;
 }
+.catapp > #wordHolder > .word{
+    color: #644bee;
+}
+
+/************** ANIMATIONS ****************/
+.rotate {
+	-webkit-animation: rotate-center 2.5s ease-in-out infinite alternate;
+	        animation: rotate-center 2.5s ease-in-out infinite alternate;
+}
+@-webkit-keyframes rotate-center {
+    0% {
+      -webkit-transform: rotate(-20deg);
+              transform: rotate(-20deg);
+    }
+    100% {
+      -webkit-transform: rotate(60deg);
+              transform: rotate(60deg);
+    }
+  }
+  @keyframes rotate-center {
+    0% {
+      -webkit-transform: rotate(-20deg);
+              transform: rotate(-20deg);
+    }
+    100% {
+      -webkit-transform: rotate(60deg);
+              transform: rotate(60deg);
+    }
+  }
