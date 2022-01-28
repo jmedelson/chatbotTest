@@ -46,6 +46,17 @@ body{
 #chatGame{
     display: none;
 }
+#startScene{
+    display: none;
+}
+#startText{
+    color: white;
+    position: absolute;
+    text-align: center;
+    top: 140px;
+    left: 775px;
+    font-size: 36px;
+}
 #intermissionScene{
     display: none;
 }

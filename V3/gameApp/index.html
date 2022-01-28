@@ -185,16 +185,24 @@
                 </div>
             </div>
         </div>
+        <div id="startScene">
+            <div id="startText">
+                <h1>CASH APP ROYALE</h1>
+                <h1 id='startMidText'>WIll BEGIN</h1>
+                <h1 id="startCountdown">SOON</h1>
+            </div>
+        </div>
         <div id="intermissionScene">
             <div id="intermissionText">
-                <h1>CHAT ROYALE<br/>WILL BEGIN IN</h1>
+                <h1>CASH APP ROYALE<br/>WILL BEGIN IN</h1>
                 <h1 id="royaleCountdown">SOON</h1>
             </div>
         </div>
         <div id="newRoundScene">
             <div id="newRoundText">
                 <h1><span id="winnerName"></span><br/> JUST WON <span id="prize"></span></h1>
-                <h1 id="newRoundText2">NEXT ROUND WILL BEGIN SHORTLY</h1>
+                <h1 id="newRoundText2">NEXT ROUND WILL BEGIN IN</h1>
+                <h1 id="roundCountdown">SOON</h1>
             </div>
         </div>
         <div id="textHolder">
@@ -228,6 +236,52 @@
         const commandArray = ['up', 'down', 'left', 'right'];
         const client = new tmi.Client(opts);
         let tmiConnected = false
+        var mainAudio = new Audio("./static/soundFX/main.wav")
+        mainAudio.loop = true
+        mainAudio.volume = 0.3
+        var catAudio = new Audio("./static/soundFX/cat.wav")
+        catAudio.loop = true
+        catAudio.volume = 0.3
+        var upAudio = new Audio("./static/soundFX/Move_Up.wav")
+        var downAudio = new Audio("./static/soundFX/Move_Down.wav")
+        var leftAudio = new Audio("./static/soundFX/Move_Left.wav")
+        var rightAudio = new Audio("./static/soundFX/Move_Right.wav")
+        var catUpAudio = new Audio("./static/soundFX/cat_up.wav")
+        var catDownAudio = new Audio("./static/soundFX/cat_up.wav")
+        var catLeftAudio = new Audio("./static/soundFX/cat_up.wav")
+        var catRightAudio = new Audio("./static/soundFX/cat_up.wav")
+        let directionAudio = {
+            up: upAudio,
+            down: downAudio,
+            left: leftAudio,
+            right: rightAudio,
+        }
+        let catDirectionAudio = {
+            up: catUpAudio,
+            down: catDownAudio,
+            left: catLeftAudio,
+            right: catRightAudio,
+        }
+        var minAudio = new Audio("./static/soundFX/small_value_prize.wav")
+        var medAudio = new Audio("./static/soundFX/medium_value_prize.wav")
+        var maxAudio = new Audio("./static/soundFX/high_value_prize.wav")
+        var catPrizeAudio = new Audio("./static/soundFX/cat_button.wav")
+        var fishPrizeAudio = new Audio("./static/soundFX/bones_button.wav")
+        var winnerAudio1 = new Audio("./static/soundFX/win_1.wav")
+        var winnerAudio2 = new Audio("./static/soundFX/win_2.wav")
+        var winnerAudio3 = new Audio("./static/soundFX/win_3.wav")
+        var winnerAudio4 = new Audio("./static/soundFX/win_4.wav")
+        var winnerAudio5 = new Audio("./static/soundFX/win_5.wav")
+        var winnerAudios = [
+            winnerAudio1,
+            winnerAudio2,
+            winnerAudio3,
+            winnerAudio4,
+            winnerAudio5
+        ]
+        var countdownAudio = new Audio("./static/soundFX/in_between_last_number.wav")
+        var tickAudio = new Audio("./static/soundFX/in_between_counter_numbers.wav")
+        var eliminateAudio = new Audio("./static/soundFX/eliminate_player.wav")
         client.on('message', onMessageHandler);
         client.on('connected', onConnectedHandler);
         client.on('disconnected', onDisonnectedHandler);
@@ -292,6 +346,7 @@
 
         let catApp = false;
         let catCheck = false
+        let currentCountdown = 10;
         let currentRound = 0;
         let earnedPrizes = 0;
         let currentPrize = 0;
@@ -309,7 +364,8 @@
             maxPlayers: 1000,
             refill: 280,
             expectedRounds: 30,
-            prizePool: 5000
+            prizePool: 5000,
+            countdown: 5
         }
         let selected = 5
         /* Gridgame script */
@@ -331,8 +387,18 @@
             }
             votes['down'] = 101
         }
+        async function countDown(element){
+            currentCountdown = settings.countdown
+            for(currentCountdown; currentCountdown > 0; currentCountdown--){
+                element.innerText = currentCountdown
+                tickAudio.play()
+                await sleep(980)
+            }
+            countdownAudio.play()
+            return;
+        }
         function setIntermission(){
-            document.getElementById('royaleCountdown').innerText = '5'
+            document.getElementById('royaleCountdown').innerText = settings.countdown
             document.getElementById('chatGame').style.display = 'none'
             document.getElementById('boxGame').style.display = 'none'
             document.getElementById('loading').style.display = 'none'
@@ -341,6 +407,7 @@
         function setNewRoundScene(winner, amount){
             document.getElementById('winnerName').innerText = winner
             document.getElementById('prize').innerText = '$' + amount
+            document.getElementById('startScene').style.display = 'none'
             document.getElementById('chatGame').style.display = 'none'
             document.getElementById('boxGame').style.display = 'none'
             document.getElementById('loading').style.display = 'none'
@@ -349,12 +416,14 @@
         function setScene(check){
             console.log("Setting Scene: ", check)
             if(check){
+                document.getElementById('startScene').style.display = 'none'
                 document.getElementById('chatGame').style.display = 'block'
                 document.getElementById('boxGame').style.display = 'none'
                 document.getElementById('loading').style.display = 'none'
                 document.getElementById('intermissionScene').style.display = 'none'
                 document.getElementById('newRoundScene').style.display = 'none'
             }else{
+                document.getElementById('startScene').style.display = 'none'
                 document.getElementById('chatGame').style.display = 'none'
                 document.getElementById('boxGame').style.display = 'block'
                 document.getElementById('loading').style.display = 'none'
@@ -438,14 +507,18 @@
             }
         }
         const average = (array) => array.reduce((a, b) => a + b) / array.length;
+        let globalmin;
+        let globalmax;
         function setup(){
             let prizes = []
             if(override.length == 0){
                 let max = Math.floor((settings.prizePool-earnedPrizes)/(settings.expectedRounds-currentRound)/5)*5;
                 let min = Math.floor((0.2 + currentRound * (0.30/settings.expectedRounds))*max/5)*5
+                globalmax = max
+                globalmin = min
                 prizes = [max,min,min,min]
                 for(let i = 0; i<6; i++){
-                    prizes.push(Math.floor(getRandomIntInclusive(min,max)/5)*5)
+                    prizes.push(Math.floor(getRandomIntInclusive(min+5,max-5)/5)*5)
                 }
                 console.log("prizes:", prizes)
                 document.getElementById('min').innerText = 'Min: ' + min
@@ -665,6 +738,11 @@
                     let winner = parseCommand()
                     console.log("Votes:", votes)
                     console.log("Winner:", winner)
+                    if(catCheck){
+                        catDirectionAudio[winner].play()
+                    }else{
+                        directionAudio[winner].play()
+                    }
                     gridLogic(winner)
                     barControl(winner, votes)
                     votes = {
@@ -678,24 +756,32 @@
 
             }
             document.getElementById('box' + selected).classList.add('show-card')
+            let box = 'boxValue' + selected
+            let winning = document.getElementById(box).innerText
+            winning = winning.substring(1)
+            if(winning == globalmin){
+                minAudio.play()
+            }else if(winning == globalmax){
+                maxAudio.play()
+            }else if(selected == 10){
+                console.log('cat royale')
+                catPrizeAudio.play()
+                catApp = true
+                catCheck = true
+                winning = 0
+            }else if(selected == 12){
+                console.log('bad')
+                fishPrizeAudio.play()
+                winning = 0
+            }else{
+                medAudio.play()
+            }
             for(let i = 13; i>=0; i--){
                 target.style.visibility = (target.style.visibility == 'hidden' ? '' : 'hidden');
                 await sleep(150);
             }
             reveal()
             client.disconnect();
-            let box = 'boxValue' + selected
-            let winning = document.getElementById(box).innerText
-            winning = winning.substring(1)
-            if(selected == 10){
-                console.log('cat royale')
-                catApp = true
-                catCheck = true
-                winning = 0
-            }else if(selected == 12){
-                console.log('bad')
-                winning = 0
-            }
             winning = parseInt(winning)
             earnedPrizes += winning
             currentPrize = winning
@@ -708,12 +794,10 @@
                 await sleep(2000);            
                 document.getElementById('catHolder').style.display = 'none'
                 setIntermission()
+                let target = document.getElementById('royaleCountdown')
+                await countDown(target)
                 ws.send(JSON.stringify({ action: 'message', header: 'startRoyale' }));
                 await reset()
-                for(let i = 5; i>0;  i--){
-                    document.getElementById('royaleCountdown').innerText = i
-                    await sleep(990);
-                }
                 settings.chatGame = true
                 setScene(settings.chatGame)
             }
@@ -793,6 +877,8 @@
         }
         async function removeWord(name){
             console.log("remove word:", name)
+            var eliminateAudio = new Audio("./static/soundFX/eliminate_player.wav")
+            eliminateAudio.play()
             delete renderList[name]
             total--
             document.getElementById("total").innerText = total;
@@ -814,6 +900,7 @@
                     catCheck = false
                     stopCatApp()
                 }
+                winnerAudios[getRandomIntInclusive(0,4)].play()
                 client.disconnect();
                 console.log("Winner: " + renderList[Object.keys(renderList)[0]])
                 let newItem = {
@@ -826,11 +913,11 @@
                 para.innerText = newItem.name + ' has won: $' +   newItem.amount
                 document.getElementById("winnerHolder").appendChild(para)
                 setNewRoundScene(newItem.name, newItem.amount)
-                await sleep(6000)
-                settings.chatGame = false
-                setScene(settings.chatGame)
-                await sleep(1000)
                 if(currentRound < settings.expectedRounds){
+                    let target = document.getElementById("roundCountdown")
+                    await countDown(target)
+                    settings.chatGame = false
+                    setScene(settings.chatGame)
                     startRound()
                 }
             }
@@ -853,10 +940,6 @@
             document.getElementById('currentRound').innerText = 'Round: ' + currentRound + '/' + settings.expectedRounds
             document.getElementById('prizeEarned').innerText = '$' + earnedPrizes
         }
-        var mainAudio = new Audio("./static/main.wav")
-        mainAudio.loop = true
-        var catAudio = new Audio("./static/cat.wav")
-        catAudio.loop = true
         function startAudio(){
             catAudio.pause()
             mainAudio.play()
@@ -895,11 +978,14 @@
             ws.send(JSON.stringify({ action: 'message', header: 'gameSettings' }));
             ws.send(JSON.stringify({ action: 'message', header: 'getGameData' }));
         }
-        ws.onmessage = function (evt) { 
+        ws.onmessage = async function (evt) { 
             var received = evt.data;
             let parsed = JSON.parse(received)
             console.log(parsed)
             if(parsed.header == 'startGrid'){
+                document.getElementById('startMidText').innerHTML = 'WILL BEGIN IN'
+                let target = document.getElementById('startCountdown')
+                await countDown(target)
                 setScene(settings.chatGame)
                 startRound();
             }else if(parsed.header == 'startRoyale'){
@@ -919,10 +1005,12 @@
                 settings.refill = data.refill
                 settings.expectedRounds = data.expectedRounds
                 settings.prizePool = data.prizePool
+                settings.countdown = data.countdown
+                currentCountdown = data.countdown
                 document.getElementById("prizeAmount").innerText = '$' + data.prizePool
                 reset()
                 document.getElementById('loading').style.display = 'none'
-                document.getElementById('intermissionScene').style.display = 'block'
+                document.getElementById('startScene').style.display = 'block'
                 // setScene(settings.chatGame)
             }else if(parsed.header == 'vote'){
                 let command = parsed.winner
