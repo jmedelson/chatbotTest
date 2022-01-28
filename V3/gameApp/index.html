@@ -238,10 +238,8 @@
         let tmiConnected = false
         var mainAudio = new Audio("./static/soundFX/main.wav")
         mainAudio.loop = true
-        mainAudio.volume = 0.3
         var catAudio = new Audio("./static/soundFX/cat.wav")
         catAudio.loop = true
-        catAudio.volume = 0.3
         var upAudio = new Audio("./static/soundFX/Move_Up.wav")
         var downAudio = new Audio("./static/soundFX/Move_Down.wav")
         var leftAudio = new Audio("./static/soundFX/Move_Left.wav")
@@ -267,6 +265,7 @@
         var maxAudio = new Audio("./static/soundFX/high_value_prize.wav")
         var catPrizeAudio = new Audio("./static/soundFX/cat_button.wav")
         var fishPrizeAudio = new Audio("./static/soundFX/bones_button.wav")
+        var prizeAudio = [minAudio, medAudio, maxAudio, catPrizeAudio, fishPrizeAudio]
         var winnerAudio1 = new Audio("./static/soundFX/win_1.wav")
         var winnerAudio2 = new Audio("./static/soundFX/win_2.wav")
         var winnerAudio3 = new Audio("./static/soundFX/win_3.wav")
@@ -952,6 +951,26 @@
             mainAudio.pause()
             catAudio.pause()
         }
+        function audioControl(data){
+            console.log("AUDIO DATA")
+            console.log(data)
+            mainAudio.volume = parseInt(data.mainBG) * 0.01
+            catAudio.volume = parseInt(data.catBG) * 0.01
+            for(let sound in directionAudio){
+                directionAudio[sound].volume = parseInt(data.directions) * 0.01
+            }
+            for(let sound in catDirectionAudio){
+                catDirectionAudio[sound].volume = parseInt(data.catDirections) * 0.01
+            }
+            for(let sound of prizeAudio){
+                sound.volume = parseInt(data.prize) * 0.01
+            }
+            for(let sound of winnerAudios){
+                sound.volume = parseInt(data.winner) * 0.01
+            }
+            eliminateAudio.volume = parseInt(data.elimination) * 0.01
+            countdownAudio.volume = parseInt(data.countdown) * 0.01
+        }
         /* Websocket script */
         let myCatInterval;
         let cattoggle= false
@@ -977,6 +996,7 @@
             console.log('Websocket connected')
             ws.send(JSON.stringify({ action: 'message', header: 'gameSettings' }));
             ws.send(JSON.stringify({ action: 'message', header: 'getGameData' }));
+            ws.send(JSON.stringify({ action: 'message', header: 'getAudio' }));
         }
         ws.onmessage = async function (evt) { 
             var received = evt.data;
@@ -1016,6 +1036,9 @@
                 let command = parsed.winner
                 gridLogic(command)
                 barControl(command, parsed.votes)
+            }else if(parsed.header == 'audioSettings'){
+                let resAudio = parsed.data
+                audioControl(resAudio)
             }
             console.log("received data over websocket")
             console.log(received)
